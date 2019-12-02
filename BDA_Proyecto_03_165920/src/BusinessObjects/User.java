@@ -1,36 +1,45 @@
 package BusinessObjects;
 
+import Enums.Sex;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 import org.bson.types.ObjectId;
 
+/**
+ * @author Juan Enrique Solis Perla
+ * @ID: 165920 Advanced Databases Class, ISW, ITSON
+ */
 public class User {
+
     private ObjectId id;
-    private String name;
+    private String username;
+    private String password;
+    private String email;
     private Date birthDate;
-    private Integer age;
-    private String sex;
+    private Sex sex;
     private ArrayList<FavoriteMovie> favMovies;
     private ArrayList<FavoriteMusicGenre> favMusicGenre;
 
     public User() {
     }
 
-    public User(ObjectId id, String name, Date birthDate, Integer age, String sex, ArrayList<FavoriteMovie> favMovies, ArrayList<FavoriteMusicGenre> favMusicGenre) {
+    public User(ObjectId id, String username, String password, String email, Date birthDate, Sex sex, ArrayList<FavoriteMovie> favMovies, ArrayList<FavoriteMusicGenre> favMusicGenre) {
         this.id = id;
-        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.email = email;
         this.birthDate = birthDate;
-        this.age = age;
         this.sex = sex;
         this.favMovies = favMovies;
         this.favMusicGenre = favMusicGenre;
     }
 
-    public User(String name, Date birthDate, Integer age, String sex, ArrayList<FavoriteMovie> favMovies, ArrayList<FavoriteMusicGenre> favMusicGenre) {
-        this.name = name;
+    public User(String username, String password, String email, Date birthDate, Sex sex, ArrayList<FavoriteMovie> favMovies, ArrayList<FavoriteMusicGenre> favMusicGenre) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
         this.birthDate = birthDate;
-        this.age = age;
         this.sex = sex;
         this.favMovies = favMovies;
         this.favMusicGenre = favMusicGenre;
@@ -44,14 +53,30 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
     public Date getBirthDate() {
         return birthDate;
     }
@@ -60,19 +85,15 @@ public class User {
         this.birthDate = birthDate;
     }
 
-    public Integer getAge() {
-        return age;
+    public Integer calculateAge() {
+        return 0;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public String getSex() {
+    public Sex getSex() {
         return sex;
     }
 
-    public void setSex(String sex) {
+    public void setSex(Sex sex) {
         this.sex = sex;
     }
 
@@ -119,6 +140,6 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", name=" + name + ", birthDate=" + birthDate + ", age=" + age + ", sex=" + sex + ", favMovies=" + favMovies + ", favMusicGenre=" + favMusicGenre + '}';
+        return "User{" + "id=" + id + ", username=" + username + ", password=" + password + ", email=" + email + ", birthDate=" + birthDate + ", sex=" + sex + ", favMovies=" + favMovies + ", favMusicGenre=" + favMusicGenre + '}';
     }
 }

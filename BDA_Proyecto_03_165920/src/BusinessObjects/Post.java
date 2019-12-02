@@ -5,7 +5,11 @@ import java.util.Date;
 import java.util.Objects;
 import org.bson.types.ObjectId;
 
-public class Post {
+/**
+ * @author Juan Enrique Solis Perla
+ * @ID: 165920 Advanced Databases Class, ISW, ITSON
+ */
+public class Post implements Comparable<Post> {
 
     private ObjectId id;
     private Date date;
@@ -105,6 +109,11 @@ public class Post {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(Post post) {
+        return this.date.compareTo(post.getDate());
     }
 
     @Override

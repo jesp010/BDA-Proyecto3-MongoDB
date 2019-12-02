@@ -3,6 +3,10 @@ package BusinessObjects;
 import java.util.Objects;
 import org.bson.types.ObjectId;
 
+/**
+ * @author Juan Enrique Solis Perla
+ * @ID: 165920 Advanced Databases Class, ISW, ITSON
+ */
 public class Tag {
    private ObjectId id;
    private String tag;

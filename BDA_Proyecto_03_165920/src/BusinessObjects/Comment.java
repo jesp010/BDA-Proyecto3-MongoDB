@@ -4,8 +4,12 @@ import java.util.Date;
 import java.util.Objects;
 import org.bson.types.ObjectId;
 
+/**
+ * @author Juan Enrique Solis Perla
+ * @ID: 165920 Advanced Databases Class, ISW, ITSON
+ */
+public class Comment implements Comparable<Comment> {
 
-public class Comment {
     private ObjectId id;
     private Date date;
     private String comment;
@@ -13,7 +17,7 @@ public class Comment {
 
     public Comment() {
     }
-    
+
     public Comment(ObjectId id, Date date, String comment, User user) {
         this.id = id;
         this.date = date;
@@ -82,6 +86,11 @@ public class Comment {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(Comment comment) {
+        return this.date.compareTo(comment.getDate());
     }
 
     @Override
