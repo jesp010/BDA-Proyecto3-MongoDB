@@ -90,7 +90,7 @@ public class PostsDAO {
     }
 
     public ArrayList<Post> findByTag(String tag) {
-        String pattern = ""+ tag +"";
+        String pattern = ".*"+ tag +".*";
         ArrayList<Post> posts = new ArrayList<>();
 
         Document regQuery = new Document();
