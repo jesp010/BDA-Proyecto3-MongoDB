@@ -6,12 +6,19 @@ import BusinessObjects.Tag;
 import BusinessObjects.User;
 import Control.PostControl;
 import Control.UserControl;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import org.bson.types.ObjectId;
 
 public class Home extends javax.swing.JFrame implements ActionListener {
@@ -55,6 +62,8 @@ public class Home extends javax.swing.JFrame implements ActionListener {
         jListTags.setModel(new DefaultListModel());
         jLabelUsername.setText("Welcome " + user.getUsername() + "!!");
         this.setVisible(true);
+
+        refreshPane();
     }
 
     @Override
@@ -69,8 +78,10 @@ public class Home extends javax.swing.JFrame implements ActionListener {
                 deleteTagJList();
                 break;
             case "Refresh":
+                refreshPane();
                 break;
             case "Search":
+                search();
                 break;
             case "NewPost":
                 newPost();
@@ -82,6 +93,139 @@ public class Home extends javax.swing.JFrame implements ActionListener {
             case "UpdateUser":
                 new UpdateForm(user);
                 break;
+        }
+    }
+
+    private void refreshPane() {
+        refreshJTextPane(postControl.findAll());
+    }
+
+    private void refreshJTextPane(ArrayList<Post> posts) {
+        //Clean jTextPane
+        jTextPanePosts.setText("");
+
+        Style styleDate = jTextPanePosts.addStyle("date", null);
+        StyleConstants.setForeground(styleDate, Color.MAGENTA);
+
+        Style stylePost = jTextPanePosts.addStyle("post", null);
+        StyleConstants.setForeground(stylePost, Color.BLUE);
+        
+        Style styleComments = jTextPanePosts.addStyle("comments", null);
+        StyleConstants.setForeground(styleComments, Color.darkGray);
+
+//        StyledDocument doc = jTextPaneChat.getStyledDocument();
+        StyledDocument doc = jTextPanePosts.getStyledDocument();
+//        ArrayList<Post> posts = postControl.findAll();
+
+        if (posts.size() > 0) {
+            for (Post p : posts) {
+                try {
+                    doc.insertString(doc.getLength(), "By user: " + p.getUser().getUsername() + ", Date: " + p.getDate().toString() + "\n", styleDate);
+                    doc.insertString(doc.getLength(), p.getMessage() + "\n", stylePost);
+                    String tags = "Tags: ";
+                    for (Tag t : p.getTags()) {
+                        tags = tags + "#" + t.getTag() + " ";
+                    }
+                    doc.insertString(doc.getLength(), tags + "\n", stylePost);
+
+                    //Add button
+                    JFrame parent = this;
+                    JButton boton = new JButton("Comment");
+                    boton.setName(p.getId().toString());
+                    boton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            JButton btn = (JButton) e.getSource();
+                            String id = btn.getName(); // puedes guardar el id
+//                            JOptionPane.showMessageDialog(parent, btn.getText());
+//                            JOptionPane.showMessageDialog(parent, id);
+                            String input = JOptionPane.showInputDialog("Add comment: ");
+                            System.out.println("Comment: " + input);
+
+                            Comment comment = new Comment(new ObjectId(), new Date(), input, user);
+                            postControl.addComment(postControl.findByID(new ObjectId(id)), comment);
+                            refreshPane();
+                        }
+                    });
+                    jTextPanePosts.setCaretPosition(jTextPanePosts.getDocument().getLength());
+                    jTextPanePosts.insertComponent(boton);
+
+                    //Print comments
+                    doc.insertString(doc.getLength(), "\nComments:" + "\n", stylePost);
+                    for (Comment c : p.getComments()) {
+                        doc.insertString(doc.getLength(), "By user: " + c.getUser().getUsername() + ", Comment: " + c.getComment(), styleComments);
+                        
+                        //Add remove button to comments of this.user
+                        if (user.getId().equals(c.getUser().getId())) {
+                            JButton btnRemoveComment = new JButton("Remove");
+                            btnRemoveComment.setName(c.getId().toString());
+                            btnRemoveComment.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    JButton btn = (JButton) e.getSource();
+                                    String buttonID = btn.getName();
+                                    postControl.removeComment(p, buttonID);
+                                    refreshPane();
+                                }
+                            });
+                            jTextPanePosts.setCaretPosition(jTextPanePosts.getDocument().getLength());
+                            jTextPanePosts.insertComponent(btnRemoveComment);
+                            doc.insertString(doc.getLength(), "\n", stylePost);
+                        }
+
+                    }
+                    doc.insertString(doc.getLength(), "\n--------------------------------------------------------------------------------------------------" + "\n", null);
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+            }
+            jTextPanePosts.setStyledDocument(doc);
+        }
+
+//        if (chatMessages.size() > 0) {
+//            for (Message m : chatMessages) {
+//                try {
+//                    if (m.getUser().getId() == this.user.getId()) {
+//                        doc.insertString(doc.getLength(), m.getUser().getUserName() + ": ", style1);
+//                        doc.insertString(doc.getLength(), m.getMessage() + "\n\n", null);
+//                    } else {
+//                        doc.insertString(doc.getLength(), m.getUser().getUserName() + ": ", style2);
+//                        doc.insertString(doc.getLength(), m.getMessage() + "\n\n", null);
+//                    }
+//                } catch (BadLocationException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            jTextPaneChat.setStyledDocument(doc);
+//        }
+    }
+    
+    private void search(){
+        String tag = jTextFieldTag.getText();
+        ArrayList<Post> posts = postControl.findByTag(tag);
+        
+        if(posts.size() < 1){
+            refreshPane();
+        }
+        refreshJTextPane(posts);
+    }
+
+    private void crearBotonesDinamicos(int numeroBotones) {
+        JFrame parent = this;
+        for (int i = 1; i <= numeroBotones; i++) {
+//            JButton boton = new JButton(String.format("Botón %s", i));
+            JButton boton = new JButton("Boton");
+            boton.setName(i + " this is the id");
+            boton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JButton btn = (JButton) e.getSource();
+                    String id = btn.getName(); // puedes guardar el id
+                    JOptionPane.showMessageDialog(parent, btn.getText());
+                    JOptionPane.showMessageDialog(parent, id);
+                }
+            });
+            this.add(boton);
         }
     }
 

@@ -41,4 +41,12 @@ public class PostControl {
     public void remove(Post post) {
         this.postsDAO.remove(post);
     }
+    
+    public void removeComment(Post p, String commentID){
+        this.postsDAO.removeComment(p, commentID);
+    }
+    
+    public ArrayList<Post> findByTag(String tag){
+        return this.postsDAO.findByTag(tag);
+    }
 }
